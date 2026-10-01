@@ -30,9 +30,9 @@ public class StarterBotTeleOp extends LinearOpMode {
     private DcMotor rightFront = null;
     private DcMotor leftBack = null;
     private DcMotor rightBack = null;
-    private DcMotor intakeMotor = null;
-    private Servo servo1 = null;
-    private Servo servo2 = null;
+   // private DcMotor intakeMotor = null;
+    //private Servo servo1 = null;
+    //private Servo servo2 = null;
 
     @Override
     public void runOpMode() {
@@ -42,9 +42,9 @@ public class StarterBotTeleOp extends LinearOpMode {
         rightFront = hardwareMap.get(DcMotor.class, "rightFront");
         leftBack   = hardwareMap.get(DcMotor.class, "leftBack");
         rightBack  = hardwareMap.get(DcMotor.class, "rightBack");
-        intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-        servo1 = hardwareMap.get(Servo.class, "servo1");
-        servo2 = hardwareMap.get(Servo.class, "servo2");
+        //intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
+       // servo1 = hardwareMap.get(Servo.class, "servo1");
+        //servo2 = hardwareMap.get(Servo.class, "servo2");
 
         // Direction Mapping:
         // Most robots need the left side motors reversed to drive forward.
@@ -85,30 +85,30 @@ public class StarterBotTeleOp extends LinearOpMode {
             // --- 2. INTAKE MOTOR CONTROL ---
             // Right trigger intakes, Left trigger outtakes
             if (gamepad1.right_trigger > 0.1) {
-                intakeMotor.setPower(1.0);
+                //intakeMotor.setPower(1.0);
             } else if (gamepad1.left_trigger > 0.1) {
-                intakeMotor.setPower(-1.0);
+               // intakeMotor.setPower(-1.0);
             } else {
-                intakeMotor.setPower(0.0);
+                //intakeMotor.setPower(0.0);
             }
 
             // --- 3. SERVO CONTROL ---
             // Press A to open/move, B to close/move
             if (gamepad1.a) {
-                servo1.setPosition(1.0);
-                servo2.setPosition(0.0); // Often servos for a claw move in opposite directions
+                //servo1.setPosition(1.0);
+               // servo2.setPosition(0.0); // Often servos for a claw move in opposite directions
             } else if (gamepad1.b) {
-                servo1.setPosition(0.0);
-                servo2.setPosition(1.0);
+               // servo1.setPosition(0.0);
+               // servo2.setPosition(1.0);
             }
 
             // --- 4. TELEMETRY ---
             telemetry.addData("Status", "Running");
             telemetry.addData("Drive Motors", "LF:%.2f, RF:%.2f, LB:%.2f, RB:%.2f", 
                 leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
-            telemetry.addData("Intake Power", intakeMotor.getPower());
-            telemetry.addData("Servo Positions", "S1:%.2f, S2:%.2f", 
-                servo1.getPosition(), servo2.getPosition());
+            //telemetry.addData("Intake Power", intakeMotor.getPower());
+           // telemetry.addData("Ser,nvo Positions", "S1:%.2f, S2:%.2f",
+              //  servo1.getPosition(), servo2.getPosition());
             telemetry.update();
         }
     }
