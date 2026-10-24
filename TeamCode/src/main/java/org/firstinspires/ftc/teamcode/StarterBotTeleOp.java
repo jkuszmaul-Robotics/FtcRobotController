@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -26,33 +27,33 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class StarterBotTeleOp extends LinearOpMode {
 
     // Declare OpMode members
-    private DcMotor leftFront = null;
-    private DcMotor rightFront = null;
-    private DcMotor leftBack = null;
-    private DcMotor rightBack = null;
-   // private DcMotor intakeMotor = null;
-    //private Servo servo1 = null;
-    //private Servo servo2 = null;
+    private DcMotor leftfront = null;
+    private DcMotor rightfront = null;
+    private DcMotor leftrear = null;
+    private DcMotor rightrear = null;
+    private DcMotor intake = null;
+    private CRServo leftintake = null;
+    private CRServo rightintake = null;
 
     @Override
     public void runOpMode() {
         // Initialize the hardware variables from the hardware map.
         // The strings here must match the names you set on the Robot Configuration in the Driver Station.
-        leftFront  = hardwareMap.get(DcMotor.class, "leftFront");
-        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-        leftBack   = hardwareMap.get(DcMotor.class, "leftBack");
-        rightBack  = hardwareMap.get(DcMotor.class, "rightBack");
-        //intakeMotor = hardwareMap.get(DcMotor.class, "intakeMotor");
-       // servo1 = hardwareMap.get(Servo.class, "servo1");
-        //servo2 = hardwareMap.get(Servo.class, "servo2");
+        leftfront  = hardwareMap.get(DcMotor.class, "leftfront");
+        rightfront = hardwareMap.get(DcMotor.class, "rightfront");
+        leftrear   = hardwareMap.get(DcMotor.class, "leftrear");
+        rightrear  = hardwareMap.get(DcMotor.class, "rightrear");
+        intake = hardwareMap.get(DcMotor.class, "intake");
+        leftintake = hardwareMap.get(CRServo.class, "leftintake");
+        rightintake = hardwareMap.get(CRServo.class, "rightintake");
 
         // Direction Mapping:
         // Most robots need the left side motors reversed to drive forward.
         // goBILDA mecanum wheels should be oriented in an 'X' pattern from above.
-        leftFront.setDirection(DcMotor.Direction.REVERSE);
-        leftBack.setDirection(DcMotor.Direction.REVERSE);
-        rightFront.setDirection(DcMotor.Direction.FORWARD);
-        rightBack.setDirection(DcMotor.Direction.FORWARD);
+        leftfront.setDirection(DcMotor.Direction.REVERSE);
+        leftrear.setDirection(DcMotor.Direction.REVERSE);
+        rightfront.setDirection(DcMotor.Direction.FORWARD);
+        rightrear.setDirection(DcMotor.Direction.FORWARD);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -77,29 +78,30 @@ public class StarterBotTeleOp extends LinearOpMode {
             double rightBackPower = (y + x - rx) / denominator;
 
             // Send power to the motors
-            leftFront.setPower(leftFrontPower);
-            leftBack.setPower(leftBackPower);
-            rightFront.setPower(rightFrontPower);
-            rightBack.setPower(rightBackPower);
+            leftfront.setPower(leftFrontPower);
+            leftrear.setPower(leftBackPower);
+            rightfront.setPower(rightFrontPower);
+            rightrear.setPower(rightBackPower);
 
             // --- 2. INTAKE MOTOR CONTROL ---
-            // Right trigger intakes, Left trigger outtakes
-            if (gamepad1.right_trigger > 0.1) {
-                //intakeMotor.setPower(1.0);
-            } else if (gamepad1.left_trigger > 0.1) {
-               // intakeMotor.setPower(-1.0);
-            } else {
-                //intakeMotor.setPower(0.0);
+            // button A turn on intake, button B
+            if (gamepad1.a) {
+                intake.setPower(1.0);
+            } else if (gamepad1.b) {
+               intake.setPower(-1.0);
+            } else if (gamepad1.y) {
+                intake.setPower(0.0);
             }
 
-            // --- 3. SERVO CONTROL ---
-            // Press A to open/move, B to close/move
-            if (gamepad1.a) {
-                //servo1.setPosition(1.0);
-               // servo2.setPosition(0.0); // Often servos for a claw move in opposite directions
-            } else if (gamepad1.b) {
-               // servo1.setPosition(0.0);
-               // servo2.setPosition(1.0);
+            //turn on intake servos
+            // Fixed: Trigger is a float, so we check if it's pressed past a threshold.
+            // Also changed Servo to CRServo to support setPower().
+            if (gamepad1.right_bumper) {
+                rightintake.setPower(1.0);
+            }
+
+            if (gamepad1.left_bumper) {
+                leftintake.setPower(1.0);
             }
 
             // --- 4. TELEMETRY ---
@@ -107,7 +109,7 @@ public class StarterBotTeleOp extends LinearOpMode {
             telemetry.addData("Drive Motors", "LF:%.2f, RF:%.2f, LB:%.2f, RB:%.2f", 
                 leftFrontPower, rightFrontPower, leftBackPower, rightBackPower);
             //telemetry.addData("Intake Power", intakeMotor.getPower());
-           // telemetry.addData("Ser,nvo Positions", "S1:%.2f, S2:%.2f",
+            // telemetry.addData("Ser,nvo Positions", "S1:%.2f, S2:%.2f",
               //  servo1.getPosition(), servo2.getPosition());
             telemetry.update();
         }
