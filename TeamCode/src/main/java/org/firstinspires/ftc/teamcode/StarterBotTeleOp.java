@@ -119,16 +119,16 @@ public class StarterBotTeleOp extends LinearOpMode {
             
             // Edge detection: only increment once per trigger press
             if (currentRightTrigger && !lastRightTrigger) {
-                // Increment by 90 degrees (0.25 assuming 1.0 range = 360 degrees)
-                indexPos += 0.25;
-                if (indexPos >= 1.0) indexPos = 0.0; // Ensures exactly 4 positions (0, 0.25, 0.5, 0.75)
-                indexServo.setPosition(indexPos);
+                indexServo.setPower(-1.0); // Turn servo ON
+                sleep(250);               // Adjust milliseconds (e.g., 200-300ms) until it rotates ~90 degrees
+                indexServo.setPower(0.0); // Turn servo OFF
             }
+
             lastRightTrigger = currentRightTrigger;
 
             // --- 4. LAUNCHER MOTOR CONTROL (Slew Rate Ramping) ---
             if (gamepad1.dpad_down) {
-                launcherTargetPower = 1.0; // Enable continuous spin
+                launcherTargetPower = 0.6; // Enable continuous spin
             } else if (gamepad1.dpad_up) {
                 launcherTargetPower = 0.0; // Stop
             }
@@ -145,7 +145,6 @@ public class StarterBotTeleOp extends LinearOpMode {
 
             // --- 5. TELEMETRY ---
             telemetry.addData("Status", "Running");
-            telemetry.addData("Indexer Position", indexPos);
             telemetry.addData("Launcher Power", "Target: %.2f, Current: %.2f", launcherTargetPower, launcherCurrentPower);
             telemetry.update();
         }
