@@ -33,7 +33,7 @@ public class StarterBotTeleOp extends LinearOpMode {
     private DcMotor launcherMotor = null;
 
     // Indexer State
-    private double indexPos = 0.0;
+    // private double indexPos = 0.0;
     private boolean lastRightTrigger = false;
 
     // Launcher State
@@ -68,7 +68,7 @@ public class StarterBotTeleOp extends LinearOpMode {
         launcherMotor.setDirection(DcMotor.Direction.FORWARD);
 
         // Initial servo position (orthogonal to motor)
-        indexServo.setPosition(indexPos);
+        // not compatible with continuous mode:     indexServo.setPosition(indexPos);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -151,3 +151,19 @@ public class StarterBotTeleOp extends LinearOpMode {
         }
     }
 }
+/**
+ * carousel
+ * leave in CR
+ * // Read the analog value of the right trigger (0.0 to 1.0)
+ * double triggerPower = gamepad1.right_trigger;
+ *
+ * // Directly feed the trigger value to control the speed dynamically
+ * crServo.setPower(triggerPower);
+ * double triggerPower = gamepad1.right_trigger;
+ *
+ * if (triggerPower > 0.05) {
+ *     crServo.setPower(triggerPower);
+ * } else {
+ *     crServo.setPower(0.0); // Force a hard stop if it's just resting
+ * }
+ */
