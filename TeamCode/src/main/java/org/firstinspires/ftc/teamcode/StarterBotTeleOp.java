@@ -7,40 +7,29 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
- * Starter Bot TeleOp
+ * This is a basic TeleOp program for a goBILDA Starter Bot with Mecanum wheels.
  * 
  * Hardware Configuration:
- * - Drive: "leftfront", "rightfront", "leftrear", "rightrear"
- * - Intake: "intake" (Motor), "leftintake", "rightintake" (CRServos)
- * - Indexer: "indexServo" (Positional Servo, Pin 1 Expansion Hub)
- * - Launcher: "launcherMotor" (Motor, Port 2 Control Hub)
- * 
- * Controls:
- * - Sticks: Mecanum Drive
- * - Right Bumper: Synchronized Intake IN
- * - Left Trigger: Synchronized Intake OUT
- * - A / B Buttons: Intake Motor Only (Manual override)
- * - Right Trigger: Indexer Increment (90 degree CW steps)
- * - D-pad Down: Launcher START (Continuous with Ramping)
- * - D-pad Up: Launcher STOP
+ * - 4 Drive Motors: "leftfront", "rightfront", "leftrear", "rightrear"
+ * - 1 Intake Motor: "intake"
+ * - 2 CRServos: "leftintake", "rightintake"
+ * - 1 Indexer Servo: "carousel" (Pin 1 Expansion Hub)
+ * - 1 Launcher Motor: "launcher" (Port 2 Control Hub)
  */
 
 @TeleOp(name="Starter Bot TeleOp", group="Linear OpMode")
 public class StarterBotTeleOp extends LinearOpMode {
 
-    // Drive Motors
     private DcMotor leftfront = null;
     private DcMotor rightfront = null;
     private DcMotor leftrear = null;
     private DcMotor rightrear = null;
-    
-    // Intake
     private DcMotor intake = null;
     private CRServo leftintake = null;
     private CRServo rightintake = null;
     
-    // Indexer and Launcher
-    private Servo indexServo = null;
+    // New Hardware for Indexer and Launcher
+    private CRServo indexServo = null;
     private DcMotor launcherMotor = null;
 
     // Indexer State
@@ -50,11 +39,10 @@ public class StarterBotTeleOp extends LinearOpMode {
     // Launcher State
     private double launcherTargetPower = 0.0;
     private double launcherCurrentPower = 0.0;
-    private final double RAMP_RATE = 0.02; // Power increment per loop iteration
+    private final double RAMP_RATE = 0.02; // Power increment per loop iteration for acceleration/deceleration
 
     @Override
     public void runOpMode() {
-        // Initialize Hardware
         leftfront  = hardwareMap.get(DcMotor.class, "leftfront");
         rightfront = hardwareMap.get(DcMotor.class, "rightfront");
         leftrear   = hardwareMap.get(DcMotor.class, "leftrear");
@@ -63,19 +51,20 @@ public class StarterBotTeleOp extends LinearOpMode {
         leftintake = hardwareMap.get(CRServo.class, "leftintake");
         rightintake = hardwareMap.get(CRServo.class, "rightintake");
         
-        indexServo = hardwareMap.get(Servo.class, "indexServo");
-        launcherMotor = hardwareMap.get(DcMotor.class, "launcherMotor");
+        // Initialize indexer and launcher hardware
+        indexServo = hardwareMap.get(CRServo.class, "carousel");
+        launcherMotor = hardwareMap.get(DcMotor.class, "launcher");
 
-        // Directions
         leftfront.setDirection(DcMotor.Direction.REVERSE);
         leftrear.setDirection(DcMotor.Direction.REVERSE);
         rightfront.setDirection(DcMotor.Direction.FORWARD);
         rightrear.setDirection(DcMotor.Direction.FORWARD);
 
-        // Reverse left intake for coordinated inward rotation
+        // Directions for intake servos
+        // Reversing one ensures they spin together to pull items IN
         leftintake.setDirection(CRServo.Direction.REVERSE);
         
-        // Launcher direction: clockwise facing forward
+        // Launcher direction: clockwise facing forward (Standard Forward is CW)
         launcherMotor.setDirection(DcMotor.Direction.FORWARD);
 
         // Initial servo position (orthogonal to motor)
@@ -99,6 +88,8 @@ public class StarterBotTeleOp extends LinearOpMode {
             rightrear.setPower((y + x - rx) / denominator);
 
             // --- 2. INTAKE CONTROL ---
+            // Note: right_trigger is now used for the indexer servo. 
+            // Intake IN is moved to right_bumper to avoid conflict.
             if (gamepad1.right_bumper) {
                 intake.setPower(1.0);
                 leftintake.setPower(1.0);
@@ -109,36 +100,40 @@ public class StarterBotTeleOp extends LinearOpMode {
                 rightintake.setPower(-1.0);
             } else if (gamepad1.a) {
                 intake.setPower(1.0);
-                leftintake.setPower(0.0); // Stop servos if only using motor button
-                rightintake.setPower(0.0);
+                leftintake.setPower(1.0); // Synchronize for full power
+                rightintake.setPower(1.0);
             } else if (gamepad1.b) {
                 intake.setPower(-1.0);
-                leftintake.setPower(0.0);
-                rightintake.setPower(0.0);
+                leftintake.setPower(-1.0); // Synchronize for full power
+                rightintake.setPower(-1.0);
             } else {
+                // STOP everything when no input is active
                 intake.setPower(0.0);
                 leftintake.setPower(0.0);
                 rightintake.setPower(0.0);
             }
 
             // --- 3. INDEX SERVO CONTROL (90 degree increments) ---
-            boolean currentRightTrigger = (gamepad1.right_trigger > 0.5);
+            // Detect when right trigger is pushed (threshold > 0.5)
+            boolean currentRightTrigger = gamepad1.right_trigger > 0.5;
+            
+            // Edge detection: only increment once per trigger press
             if (currentRightTrigger && !lastRightTrigger) {
                 // Increment by 90 degrees (0.25 assuming 1.0 range = 360 degrees)
                 indexPos += 0.25;
-                if (indexPos >= 1.0) indexPos = 0.0;
+                if (indexPos >= 1.0) indexPos = 0.0; // Ensures exactly 4 positions (0, 0.25, 0.5, 0.75)
                 indexServo.setPosition(indexPos);
             }
             lastRightTrigger = currentRightTrigger;
 
             // --- 4. LAUNCHER MOTOR CONTROL (Slew Rate Ramping) ---
             if (gamepad1.dpad_down) {
-                launcherTargetPower = 1.0; 
+                launcherTargetPower = 1.0; // Enable continuous spin
             } else if (gamepad1.dpad_up) {
-                launcherTargetPower = 0.0;
+                launcherTargetPower = 0.0; // Stop
             }
 
-            // Acceleration and Deceleration logic
+            // Ramping logic for start-up acceleration and wind-down deceleration
             if (launcherCurrentPower < launcherTargetPower) {
                 launcherCurrentPower += RAMP_RATE;
                 if (launcherCurrentPower > launcherTargetPower) launcherCurrentPower = launcherTargetPower;
@@ -151,7 +146,7 @@ public class StarterBotTeleOp extends LinearOpMode {
             // --- 5. TELEMETRY ---
             telemetry.addData("Status", "Running");
             telemetry.addData("Indexer Position", indexPos);
-            telemetry.addData("Launcher Pwr", "Actual: %.2f / Target: %.2f", launcherCurrentPower, launcherTargetPower);
+            telemetry.addData("Launcher Power", "Target: %.2f, Current: %.2f", launcherTargetPower, launcherCurrentPower);
             telemetry.update();
         }
     }
