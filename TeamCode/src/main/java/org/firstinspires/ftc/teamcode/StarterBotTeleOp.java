@@ -33,6 +33,8 @@ public class StarterBotTeleOp extends LinearOpMode {
     private DcMotor launcherMotor = null;
     // servo power variable
     private double servoPower = -1.0;
+    // keep track if intake is on or off
+    private boolean intakeStatus = false;
 
     // Indexer State
     // private double indexPos = 0.0;
@@ -42,6 +44,7 @@ public class StarterBotTeleOp extends LinearOpMode {
     private double launcherTargetPower = 0.0;
     private double launcherCurrentPower = 0.0;
     private final double RAMP_RATE = 0.02; // Power increment per loop iteration for acceleration/deceleration
+    private double maxDrivePower = 0.4;
 
     @Override
     public void runOpMode() {
@@ -83,32 +86,24 @@ public class StarterBotTeleOp extends LinearOpMode {
             double x = gamepad1.left_stick_x * 1.1;
             double rx = gamepad1.right_stick_x;
 
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 0.5);
-            leftfront.setPower((y + x + rx) / denominator);
-            leftrear.setPower((y - x + rx) / denominator);
-            rightfront.setPower((y - x - rx) / denominator);
-            rightrear.setPower((y + x - rx) / denominator);
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1.0);
+            leftfront.setPower(((y + x + rx) / denominator) * maxDrivePower);
+            leftrear.setPower(((y - x + rx) / denominator) * maxDrivePower);
+            rightfront.setPower(((y - x - rx) / denominator) * maxDrivePower);
+            rightrear.setPower(((y + x - rx) / denominator) * maxDrivePower);
 
-            // --- 2. INTAKE CONTROL ---
-            // Note: right_trigger is now used for the indexer servo. 
-            // Intake IN is moved to right_bumper to avoid conflict.
-            if (gamepad1.right_bumper) {
-                intake.setPower(-1.0);
-                leftintake.setPower(-1.0);
-                rightintake.setPower(-1.0);
-            } else if (gamepad1.a) {
+            // --- 2. INTAKE CONTROL --- right bumper for toggling intake on and off
+            if (gamepad1.right_bumper && !intakeStatus) {
                 intake.setPower(servoPower);
                 leftintake.setPower(servoPower);
                 rightintake.setPower(servoPower);
-            } else if (gamepad1.b) {
-                intake.setPower(-1.0);
-                leftintake.setPower(-1.0); // Synchronize for full power
-                rightintake.setPower(-1.0);
-            } else {
+                intakeStatus = true;
+            } else if (gamepad1.right_bumper && intakeStatus){
                 // STOP everything when no input is active
                 intake.setPower(0.0);
                 leftintake.setPower(0.0);
                 rightintake.setPower(0.0);
+                intakeStatus = false;
             }
 
             // --- 3. INDEX SERVO CONTROL (90 degree increments) ---
