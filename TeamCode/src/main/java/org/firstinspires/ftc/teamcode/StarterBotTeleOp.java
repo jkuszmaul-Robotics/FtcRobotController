@@ -27,10 +27,12 @@ public class StarterBotTeleOp extends LinearOpMode {
     private DcMotor intake = null;
     private CRServo leftintake = null;
     private CRServo rightintake = null;
-    
+
     // New Hardware for Indexer and Launcher
     private CRServo indexServo = null;
     private DcMotor launcherMotor = null;
+    // servo power variable
+    private double servoPower = -1.0;
 
     // Indexer State
     // private double indexPos = 0.0;
@@ -81,7 +83,7 @@ public class StarterBotTeleOp extends LinearOpMode {
             double x = gamepad1.left_stick_x * 1.1;
             double rx = gamepad1.right_stick_x;
 
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1.0);
+            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 0.5);
             leftfront.setPower((y + x + rx) / denominator);
             leftrear.setPower((y - x + rx) / denominator);
             rightfront.setPower((y - x - rx) / denominator);
@@ -91,17 +93,13 @@ public class StarterBotTeleOp extends LinearOpMode {
             // Note: right_trigger is now used for the indexer servo. 
             // Intake IN is moved to right_bumper to avoid conflict.
             if (gamepad1.right_bumper) {
-                intake.setPower(1.0);
-                leftintake.setPower(1.0);
-                rightintake.setPower(1.0);
-            } else if (gamepad1.left_trigger > 0.1) {
                 intake.setPower(-1.0);
                 leftintake.setPower(-1.0);
                 rightintake.setPower(-1.0);
             } else if (gamepad1.a) {
-                intake.setPower(1.0);
-                leftintake.setPower(1.0); // Synchronize for full power
-                rightintake.setPower(1.0);
+                intake.setPower(servoPower);
+                leftintake.setPower(servoPower);
+                rightintake.setPower(servoPower);
             } else if (gamepad1.b) {
                 intake.setPower(-1.0);
                 leftintake.setPower(-1.0); // Synchronize for full power
@@ -128,7 +126,7 @@ public class StarterBotTeleOp extends LinearOpMode {
 
             // --- 4. LAUNCHER MOTOR CONTROL (Slew Rate Ramping) ---
             if (gamepad1.dpad_down) {
-                launcherTargetPower = 0.6; // Enable continuous spin
+                launcherTargetPower = 0.45; // Enable continuous spin
             } else if (gamepad1.dpad_up) {
                 launcherTargetPower = 0.0; // Stop
             }
