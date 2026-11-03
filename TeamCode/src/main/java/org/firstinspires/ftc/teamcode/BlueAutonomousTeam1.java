@@ -33,23 +33,26 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
     // --- Power & Speed Variables ---
     private double drivePower = 0.4;
     private double turnPower = 0.4;
-    private double launcherPower = 0.45;
+    private double launcherPower = 0.5;
     private double indexerPower = -1.0;
 
     // --- Timing & Calibration Variables ---
     private double msPerInchDrive = 50.0;     // Milliseconds per inch for straight drive
     private double msPerInchStrafe = 60.0;    // Milliseconds per inch for strafing
     private double msPerDegreeTurn = 10.0;    // Milliseconds per degree for turning
-    private long indexerDurationMs = 250;     // Servo pulse time per 90-degree index
-    private long indexerPauseMs = 500;        // Pause between index shots
+    private long indexerDurationMs = 1100;     // Servo pulse time per !90-degree index
+    private long indexerPauseMs = 1500;        // Pause between index shots
     private long launcherRampWaitMs = 2000;   // Wait time for launcher to reach full speed (2 seconds)
 
     // --- Autonomous Routine Values ---
-    private int shootCount = 3;
-    private double initialBackwardInches = 6.0;
+    private int shootCount = 4;
+    private double initialBackwardFeet = 3.0/12;
+    private double initialForwardFeet = 2.0/12;
     private double strafeRightFeet = 2.0;
-    private double finalBackwardFeet = 5.0;
+    private double strafeFinalFeet = 1.5;
+    private double finalBackwardFeet = 6.15;
     private double inchesPerFoot = 12.0;
+    private double inches = 0.0;
 
     @Override
     public void runOpMode() {
@@ -79,24 +82,29 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
-            // 1. Drive backward 6 inches
-            driveBackward(initialBackwardInches);
+            // 1. Drive backward
+            driveBackward(initialBackwardFeet);
+
+            driveForward(initialForwardFeet);
 
             // 2. Start launcher and wait 2 seconds
             startLauncher(launcherPower);
             sleep(launcherRampWaitMs);
 
-            // 3. Index servo to shoot 3 times
+            // 3. Index servo to shoot 4 times
             shoot(shootCount);
 
             // Turn off launcher after shooting
             stopLauncher();
+            sleep(1000);
 
             // 4. Move to the right 2 feet (24 inches)
-            strafeRight(strafeRightFeet * inchesPerFoot);
+            strafeRight(strafeRightFeet);
 
-            // 5. Go backward 5 feet (60 inches)
-            driveBackward(finalBackwardFeet * inchesPerFoot);
+            // 5. Go backward
+            driveBackward(finalBackwardFeet);
+
+            strafeRight(strafeFinalFeet);
 
             // Ensure robot stops at the end of the autonomous routine
             stopRobot();
@@ -110,8 +118,9 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
     /**
      * Drives the robot forward by the specified distance in inches.
      */
-    public void driveForward(double inches) {
+    public void driveForward(double feet) {
         if (!opModeIsActive()) return;
+        inches = feet * inchesPerFoot;
         long driveTimeMs = Math.round(inches * msPerInchDrive);
         leftfront.setPower(drivePower);
         leftrear.setPower(drivePower);
@@ -124,8 +133,9 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
     /**
      * Drives the robot backward by the specified distance in inches.
      */
-    public void driveBackward(double inches) {
+    public void driveBackward(double feet) {
         if (!opModeIsActive()) return;
+        inches = feet * inchesPerFoot;
         long driveTimeMs = Math.round(inches * msPerInchDrive);
         leftfront.setPower(-drivePower);
         leftrear.setPower(-drivePower);
@@ -138,8 +148,9 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
     /**
      * Strafes the robot to the right by the specified distance in inches.
      */
-    public void strafeRight(double inches) {
+    public void strafeRight(double feet) {
         if (!opModeIsActive()) return;
+        inches = feet * inchesPerFoot;
         long strafeTimeMs = Math.round(inches * msPerInchStrafe);
         leftfront.setPower(drivePower);
         leftrear.setPower(-drivePower);
@@ -152,8 +163,9 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
     /**
      * Strafes the robot to the left by the specified distance in inches.
      */
-    public void strafeLeft(double inches) {
+    public void strafeLeft(double feet) {
         if (!opModeIsActive()) return;
+        inches = feet * inchesPerFoot;
         long strafeTimeMs = Math.round(inches * msPerInchStrafe);
         leftfront.setPower(-drivePower);
         leftrear.setPower(drivePower);
