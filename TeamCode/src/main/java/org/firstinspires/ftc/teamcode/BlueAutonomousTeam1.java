@@ -40,17 +40,17 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
     private double msPerInchDrive = 50.0;     // Milliseconds per inch for straight drive
     private double msPerInchStrafe = 60.0;    // Milliseconds per inch for strafing
     private double msPerDegreeTurn = 10.0;    // Milliseconds per degree for turning
-    private long indexerDurationMs = 1100;     // Servo pulse time per !90-degree index
+    private long indexerDurationMs = 1500;     // Servo pulse time per !90-degree index
     private long indexerPauseMs = 1500;        // Pause between index shots
-    private long launcherRampWaitMs = 2000;   // Wait time for launcher to reach full speed (2 seconds)
+    private long launcherRampWaitMs = 3000;   // Wait time for launcher to reach full speed
 
     // --- Autonomous Routine Values ---
     private int shootCount = 4;
     private double initialBackwardFeet = 3.0/12;
     private double initialForwardFeet = 2.0/12;
     private double strafeRightFeet = 2.0;
-    private double strafeFinalFeet = 1.5;
-    private double finalBackwardFeet = 6.15;
+    private double strafeFinalFeet = 1.1;
+    private double finalBackwardFeet = 5.75;
     private double inchesPerFoot = 12.0;
     private double inches = 0.0;
 
@@ -96,9 +96,8 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
 
             // Turn off launcher after shooting
             stopLauncher();
-            sleep(1000);
 
-            // 4. Move to the right 2 feet (24 inches)
+            // 4. Move to the right
             strafeRight(strafeRightFeet);
 
             // 5. Go backward
@@ -116,7 +115,7 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
     // ==========================================
 
     /**
-     * Drives the robot forward by the specified distance in inches.
+     * Drives the robot forward by the specified distance in feet.
      */
     public void driveForward(double feet) {
         if (!opModeIsActive()) return;
@@ -131,7 +130,7 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
     }
 
     /**
-     * Drives the robot backward by the specified distance in inches.
+     * Drives the robot backward by the specified distance in feet.
      */
     public void driveBackward(double feet) {
         if (!opModeIsActive()) return;
@@ -146,7 +145,7 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
     }
 
     /**
-     * Strafes the robot to the right by the specified distance in inches.
+     * Strafes the robot to the right by the specified distance in feet.
      */
     public void strafeRight(double feet) {
         if (!opModeIsActive()) return;
@@ -161,7 +160,7 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
     }
 
     /**
-     * Strafes the robot to the left by the specified distance in inches.
+     * Strafes the robot to the left by the specified distance in feet.
      */
     public void strafeLeft(double feet) {
         if (!opModeIsActive()) return;
@@ -232,10 +231,21 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
      */
     public void shoot(int times) {
         for (int i = 0; i < times && opModeIsActive(); i++) {
-            indexServo.setPower(indexerPower);
-            sleep(indexerDurationMs);
-            indexServo.setPower(0.0);
-            sleep(indexerPauseMs);
+
+            if (i < times/2) {
+                indexServo.setPower(indexerPower);
+                sleep(indexerDurationMs);
+                indexServo.setPower(0.0);
+                sleep(indexerPauseMs);
+            } else {
+                indexServo.setPower(0.75*indexerPower);
+                sleep(indexerDurationMs/2);
+                indexServo.setPower(indexerPower);
+                sleep(indexerDurationMs/2);
+                indexServo.setPower(0.0);
+                sleep(indexerPauseMs/2);
+            }
+
         }
     }
 }

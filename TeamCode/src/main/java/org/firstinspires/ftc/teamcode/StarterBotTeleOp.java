@@ -33,6 +33,7 @@ public class StarterBotTeleOp extends LinearOpMode {
     private DcMotor launcherMotor = null;
     // servo power variable
     private double servoPower = -1.0;
+
     // keep track if intake is on or off
     private boolean intakeStatus = false;
 
@@ -44,7 +45,7 @@ public class StarterBotTeleOp extends LinearOpMode {
     private double launcherTargetPower = 0.0;
     private double launcherCurrentPower = 0.0;
     private final double RAMP_RATE = 0.02; // Power increment per loop iteration for acceleration/deceleration
-    private double maxDrivePower = 0.4;
+    private double maxDrivePower = 0.9;
 
     @Override
     public void runOpMode() {
@@ -94,7 +95,7 @@ public class StarterBotTeleOp extends LinearOpMode {
 
             // --- 2. INTAKE CONTROL --- right bumper for toggling intake on and off
             if (gamepad1.right_bumper && !intakeStatus) {
-                intake.setPower(servoPower);
+                intake.setPower(-servoPower);
                 leftintake.setPower(servoPower);
                 rightintake.setPower(servoPower);
                 intakeStatus = true;
@@ -104,6 +105,8 @@ public class StarterBotTeleOp extends LinearOpMode {
                 leftintake.setPower(0.0);
                 rightintake.setPower(0.0);
                 intakeStatus = false;
+            } else if (gamepad1.left_bumper && intakeStatus) {
+                intake.setPower(servoPower);
             }
 
             // --- 3. INDEX SERVO CONTROL (90 degree increments) ---
@@ -121,7 +124,7 @@ public class StarterBotTeleOp extends LinearOpMode {
 
             // --- 4. LAUNCHER MOTOR CONTROL (Slew Rate Ramping) ---
             if (gamepad1.dpad_down) {
-                launcherTargetPower = 0.45; // Enable continuous spin
+                launcherTargetPower = 0.5; // Enable continuous spin
             } else if (gamepad1.dpad_up) {
                 launcherTargetPower = 0.0; // Stop
             }
