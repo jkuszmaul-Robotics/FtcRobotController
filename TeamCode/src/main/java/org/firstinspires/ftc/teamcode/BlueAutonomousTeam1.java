@@ -40,7 +40,7 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
     private double msPerInchDrive = 50.0;     // Milliseconds per inch for straight drive
     private double msPerInchStrafe = 60.0;    // Milliseconds per inch for strafing
     private double msPerDegreeTurn = 10.0;    // Milliseconds per degree for turning
-    private long indexerDurationMs = 1500;     // Servo pulse time per !90-degree index
+    private long indexerDurationMs = 1000;     // Servo pulse time per !90-degree index
     private long indexerPauseMs = 1500;        // Pause between index shots
     private long launcherRampWaitMs = 3000;   // Wait time for launcher to reach full speed
 
@@ -247,5 +247,6 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
             }
 
         }
+        stopLauncher();
     }
 }
