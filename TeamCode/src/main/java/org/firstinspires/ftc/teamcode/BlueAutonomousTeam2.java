@@ -48,7 +48,7 @@ public class BlueAutonomousTeam2 extends LinearOpMode {
     private int shootCount = 4;
     private double initialBackwardFeet = 3.0/12;
     private double initialForwardFeet = 2.0/12;
-    private double strafeLeftFeet = 3.5;
+    private double strafeLeftFeet = 3.0;
     private double strafeFinalFeet = 1.1;
     private double finalBackwardFeet = 1.25;
     private double inchesPerFoot = 12.0;
