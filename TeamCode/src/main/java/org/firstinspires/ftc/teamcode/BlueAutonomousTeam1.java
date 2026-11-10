@@ -32,8 +32,8 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
 
     // --- Power & Speed Variables ---
     private double drivePower = 0.4;
-    private double turnPower = 0.4;
-    private double launcherPower = 0.5;
+    private double turnPower = 0.6;
+    private double launcherPower = 0.48;
     private double indexerPower = -1.0;
 
     // --- Timing & Calibration Variables ---
@@ -49,8 +49,8 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
     private double initialBackwardFeet = 3.0/12;
     private double initialForwardFeet = 2.0/12;
     private double strafeRightFeet = 1.25;
-    private double strafeFinalFeet = 1.4;
-    private double finalBackwardFeet = 5.75;
+    private double strafeFinalFeet = 1.0;
+    private double finalBackwardFeet = 5.0;
     private double inchesPerFoot = 12.0;
     private double inches = 0.0;
 
