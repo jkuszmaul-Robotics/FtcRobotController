@@ -33,7 +33,7 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
     // --- Power & Speed Variables ---
     private double drivePower = 0.4;
     private double turnPower = 0.6;
-    private double launcherPower = 0.48;
+    private double launcherPower = 0.47;
     private double indexerPower = -1.0;
 
     // --- Timing & Calibration Variables ---
