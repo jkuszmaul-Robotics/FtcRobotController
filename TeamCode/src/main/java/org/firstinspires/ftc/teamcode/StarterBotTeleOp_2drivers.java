@@ -110,7 +110,7 @@ public class StarterBotTeleOp_2drivers extends LinearOpMode {
 
             // --- 3. INDEX SERVO CONTROL (90 degree increments) ---
             // Detect when right trigger is pushed (threshold > 0.5)
-            boolean currentRightTrigger = gamepad2.right_trigger > 0.5;
+            boolean currentRightTrigger = gamepad1.right_trigger > 0.5;
             
             // Edge detection: only increment once per trigger press
             if (currentRightTrigger && !lastRightTrigger) {
@@ -124,6 +124,8 @@ public class StarterBotTeleOp_2drivers extends LinearOpMode {
             // --- 4. LAUNCHER MOTOR CONTROL (Slew Rate Ramping) ---
             if (gamepad2.dpad_down) {
                 launcherTargetPower = 0.5; // Enable continuous spin
+            } else if (gamepad2. dpad_right) {
+                launcherTargetPower = 0.54;
             } else if (gamepad2.dpad_up) {
                 launcherTargetPower = 0.0; // Stop
             }
