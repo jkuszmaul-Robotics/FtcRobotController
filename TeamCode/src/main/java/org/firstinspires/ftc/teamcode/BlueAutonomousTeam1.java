@@ -33,15 +33,15 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
     // --- Power & Speed Variables ---
     private double drivePower = 0.4;
     private double turnPower = 0.6;
-    private double launcherPower = 0.47;
+    private double launcherPower = 0.45;
     private double indexerPower = -1.0;
 
     // --- Timing & Calibration Variables ---
     private double msPerInchDrive = 50.0;     // Milliseconds per inch for straight drive
     private double msPerInchStrafe = 60.0;    // Milliseconds per inch for strafing
     private double msPerDegreeTurn = 10.0;    // Milliseconds per degree for turning
-    private long indexerDurationMs = 1000;     // Servo pulse time per !90-degree index
-    private long indexerPauseMs = 1500;        // Pause between index shots
+    private long indexerDurationMs = 600;     // Servo pulse time per !90-degree index
+    private long indexerPauseMs = 1800;        // Pause between index shots
     private long launcherRampWaitMs = 3000;   // Wait time for launcher to reach full speed
 
     // --- Autonomous Routine Values ---
@@ -91,8 +91,32 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
             startLauncher(launcherPower);
             sleep(launcherRampWaitMs);
 
-            // 3. Index servo to shoot 4 times
-            shoot(shootCount);
+            // first shot
+            shoot(1);
+
+            // second shot
+            sleep(1500);
+            shoot(1);
+
+            // shake balls into position
+            driveBackward(0.7);
+            driveForward(0.5);
+
+            // third shot
+            sleep(1500);
+            shoot(1);
+
+            // fourth shot
+            sleep(1500);
+            shoot(1);
+
+            // fifth shot if needed
+            sleep(1500);
+            shoot(1);
+
+            // sixth shot if needed
+            sleep(1500);
+            shoot(1);
 
             // Turn off launcher after shooting
             stopLauncher();
@@ -230,10 +254,10 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
      * Indexes the launcher carousel servo a given number of times to shoot.
      */
     public void shoot(int times) {
-        for (int i = 0; i < times && opModeIsActive(); i++) {
+        /*for (int i = 0; i < times && opModeIsActive(); i++) {
 
             if (i < times/2) {
-                indexServo.setPower(indexerPower);
+                indexServo.setPower(0.75 * indexerPower);
                 sleep(indexerDurationMs);
                 indexServo.setPower(0.0);
                 sleep(indexerPauseMs);
@@ -246,7 +270,13 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
                 sleep(indexerPauseMs/2);
             }
 
-        }
-        stopLauncher();
+        } */
+        // try  new way to shoot one shot at a time
+        indexServo.setPower(indexerPower);
+        sleep(indexerDurationMs);
+        indexServo.setPower(0.0);
+        sleep(indexerPauseMs);
+
+        //stopLauncher();
     }
 }
