@@ -84,7 +84,7 @@ public class StarterBotTeleOp_2drivers extends LinearOpMode {
             // --- 1. DRIVE ---
             double y = -gamepad1.left_stick_y;
             double x = gamepad1.left_stick_x * 1.1;
-            double rx = gamepad1.right_stick_x;
+            double rx = 0.7 * gamepad1.right_stick_x;
 
             double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1.0);
             leftfront.setPower(((y + x + rx) / denominator) * maxDrivePower);
@@ -92,19 +92,19 @@ public class StarterBotTeleOp_2drivers extends LinearOpMode {
             rightfront.setPower(((y - x - rx) / denominator) * maxDrivePower);
             rightrear.setPower(((y + x - rx) / denominator) * maxDrivePower);
 
-            // --- 2. INTAKE CONTROL --- right bumper for toggling intake on and off
-            if (gamepad2.right_bumper && !intakeStatus) {
+            // --- 2. INTAKE CONTROL --- toggling intake on and off
+            if (gamepad2.y && !intakeStatus) {
                 intake.setPower(-servoPower);
                 leftintake.setPower(servoPower);
                 rightintake.setPower(servoPower);
                 intakeStatus = true;
-            } else if (gamepad2.right_bumper && intakeStatus){
+            } else if (gamepad2.y && intakeStatus){
                 // STOP everything when no input is active
                 intake.setPower(0.0);
                 leftintake.setPower(0.0);
                 rightintake.setPower(0.0);
                 intakeStatus = false;
-            } else if (gamepad2.left_bumper && intakeStatus) {
+            } else if (gamepad2.a && intakeStatus) {
                 intake.setPower(servoPower);
             }
 

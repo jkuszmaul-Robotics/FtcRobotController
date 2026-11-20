@@ -106,6 +106,10 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
             sleep(1500);
             shoot(1);
 
+            // shake balls into position
+            driveBackward(0.6);
+            driveForward(0.4);
+
             // fourth shot
             sleep(1500);
             shoot(1);
@@ -115,8 +119,8 @@ public class BlueAutonomousTeam1 extends LinearOpMode {
             shoot(1);
 
             // sixth shot if needed
-            sleep(1500);
-            shoot(1);
+            // sleep(1500);
+            // shoot(1);
 
             // Turn off launcher after shooting
             stopLauncher();
